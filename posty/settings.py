@@ -57,7 +57,7 @@ ROOT_URLCONF = 'posty.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'posts/templates'],  # Dodaj tę linię, by wskazać katalog z szablonami
+        'DIRS': [BASE_DIR / 'posts/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
