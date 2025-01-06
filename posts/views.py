@@ -35,11 +35,17 @@ def post_edit(request, post_id):
         form = PostForm(instance=post)
     return render(request, 'posts/post_form.html', {'form': form})
 
-@login_required
+@login_required  # Zapewnia, że użytkownik jest zalogowany przed usunięciem posta
 def post_delete(request, post_id):
-    """Usuwanie posta."""
-    post = get_object_or_404(Post, id=post_id, author=request.user)
+    post = get_object_or_404(Post, id=post_id)  # Pobieramy post na podstawie ID
+
+    # Sprawdzamy, czy użytkownik jest autorem posta
+    if post.author != request.user:
+        return redirect('post_list')  # Jeśli nie jesteś autorem, przekieruj na listę postów
+
     if request.method == 'POST':
-        post.delete()
-        return redirect('post_list')  # Przekierowanie na listę postów
+        post.delete()  # Usuwamy post z bazy danych
+        return redirect('post_list')  # Po usunięciu przekierowujemy na listę postów
+
+    # Jeśli to GET, wyświetlamy stronę potwierdzenia usunięcia
     return render(request, 'posts/post_confirm_delete.html', {'post': post})
