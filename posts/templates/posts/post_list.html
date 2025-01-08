@@ -10,19 +10,109 @@
     <div class="container mt-4">
         <h1 class="text-center">Lista postów</h1>
         <div class="text-end mb-3">
-            <a href="{% url 'post_create' %}" class="btn btn-success">Dodaj nowy post</a>
+            {% if user.is_authenticated %}
+                <!-- Przyciski widoczne dla zalogowanego użytkownika -->
+                <span class="user-info">{{ user.username }}</span>
+                <a href="{% url 'post_create' %}" class="btn btn-primary">Dodaj nowego posta</a>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Wyloguj się</button>
+                </form>
+            {% else %}
+                <!-- Przyciski widoczne dla niezalogowanego użytkownika -->
+                <a href="{% url 'login' %}" class="btn btn-outline-primary">Zaloguj się</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">Zarejestruj się</a>
+            {% endif %}
         </div>
         <div class="list-group">
             {% for post in posts %}
-                <a href="#" class="list-group-item list-group-item-action">
-                    <h5 class="mb-1">{{ post.title }}</h5>
-                    <p class="mb-1">{{ post.content|truncatewords:20 }}</p>
-                    <small>Autor: {{ post.author }} | Dodano: {{ post.created_at }}</small>
-                </a>
+            <a href="#" class="list-group-item list-group-item-action">
+                <h5 class="mb-1">{{ post.title }}</h5>
+                <p class="mb-1 post-content" id="post-{{ post.id }}" data-full-content="{{ post.content|escape }}">
+                    {% if post.content|wordcount > 20 %}
+                        <span class="short-content">
+                            {{ post.content|truncatewords:20 }}
+                        </span>
+                        <span class="full-content" style="display:none;">
+                            {{ post.content }}
+                        </span>
+                        <button class="btn btn-link p-0 toggle-button" onclick="togglePost({{ post.id }})">
+                            Czytaj więcej
+                        </button>
+                    {% else %}
+                        {{ post.content }}
+                    {% endif %}
+                </p>
+                <small id="grey"><b>{{ post.author }}</b> {{ post.created_at|date:"d.m.Y H:i" }}</small>
+            </a>
+
             {% empty %}
                 <p class="text-center">Brak postów do wyświetlenia.</p>
             {% endfor %}
         </div>
     </div>
+    <style>
+        body {
+            background-color:lightgrey;
+        }
+        .user-info {
+            margin-right:10px;
+        }
+        #grey {
+            color: grey;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .post-content {
+            overflow: hidden;
+            display: block;
+        }
+        
+        .toggle-button {
+            color: #007bff;
+            text-decoration: underline;
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .toggle-button:hover {
+            color: #0056b3;
+        }
+        
+    </style>
+    <script>
+        function togglePost(postId) {
+            const postElement = document.querySelector(`#post-${postId}`);
+            const shortContent = postElement.querySelector('.short-content');
+            const fullContent = postElement.querySelector('.full-content');
+            const button = postElement.querySelector('.toggle-button');
+    
+            if (fullContent.style.display === "none") {
+                // Rozwiń treść
+                fullContent.style.display = "block";
+                shortContent.style.display = "none";
+                button.textContent = "Zwiń";
+            } else {
+                // Zwiń treść
+                fullContent.style.display = "none";
+                shortContent.style.display = "inline";
+                button.textContent = "Czytaj więcej";
+            }
+        }
+    </script>
+    
+    
+    
+    
 </body>
 </html>
