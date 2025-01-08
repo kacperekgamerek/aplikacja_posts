@@ -8,15 +8,19 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="text-center">Lista postów</h1>
+        {% if user.is_authenticated %}
+        <h1 class="text-center">Witaj, {{ user.username }}. Oto lista postów:</h1>
+        {% else %}
+        <h1 class="text-center">Witaj. Oto lista postów:</h1>
+        {% endif %}
         <div class="text-end mb-3">
             {% if user.is_authenticated %}
                 <!-- Przyciski widoczne dla zalogowanego użytkownika -->
-                <span class="user-info">{{ user.username }}</span>
+                <span class="user-info"></span>
                 <a href="{% url 'post_create' %}" class="btn btn-primary">Dodaj nowego posta</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Wyloguj się</button>
+                    <button type="submit" class="btn btn-dark">Wyloguj się</button>
                 </form>
             {% else %}
                 <!-- Przyciski widoczne dla niezalogowanego użytkownika -->
@@ -28,6 +32,12 @@
             {% for post in posts %}
             <a href="#" class="list-group-item list-group-item-action">
                 <h5 class="mb-1">{{ post.title }}</h5>
+        
+                <!-- Dodanie wyświetlania obrazu, jeśli istnieje -->
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="Image" class="img-thumbnail" style="max-height: 250px; max-width: 250px;">
+                {% endif %}
+        
                 <p class="mb-1 post-content" id="post-{{ post.id }}" data-full-content="{{ post.content|escape }}">
                     {% if post.content|wordcount > 20 %}
                         <span class="short-content">
@@ -43,12 +53,15 @@
                         {{ post.content }}
                     {% endif %}
                 </p>
+        
                 <small id="grey"><b>{{ post.author }}</b> {{ post.created_at|date:"d.m.Y H:i" }}</small>
             </a>
+        
+        {% empty %}
+            <p class="text-center">Brak postów do wyświetlenia.</p>
+        {% endfor %}
+        
 
-            {% empty %}
-                <p class="text-center">Brak postów do wyświetlenia.</p>
-            {% endfor %}
         </div>
     </div>
     <style>

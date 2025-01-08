@@ -14,14 +14,13 @@ def post_list(request):
 
 @login_required
 def post_create(request):
-    """Dodawanie nowego posta."""
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            post = form.save(commit=False)  # Nie zapisujemy jeszcze w bazie
-            post.author = request.user     # Ustawiamy autora na aktualnego użytkownika
+            post = form.save(commit=False)
+            post.author = request.user
             post.save()
-            return redirect('post_list')  # Po zapisaniu przekierowanie na listę postów
+            return redirect('post_list')  # Przekierowanie na stronę z listą postów
     else:
         form = PostForm()
     return render(request, 'posts/post_form.html', {'form': form})
