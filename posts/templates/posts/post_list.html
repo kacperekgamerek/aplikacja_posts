@@ -16,7 +16,6 @@
         <div class="text-end mb-3">
             {% if user.is_authenticated %}
                 <!-- Przyciski widoczne dla zalogowanego użytkownika -->
-                <span class="user-info">{{ user.username }}</span>
                 <a href="{% url 'post_create' %}" class="btn btn-primary">Dodaj nowego posta</a>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
