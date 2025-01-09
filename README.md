@@ -11,9 +11,3 @@ Posty to prosta aplikacja webowa napisana w Django, która umożliwia użytkowni
   - Logowanie i wylogowywanie.
   - Wyświetlanie nazwy zalogowanego użytkownika na stronie głównej.
 - **Obsługa obrazków:** Każdy post może zawierać opcjonalny obrazek, który jest wyświetlany w widoku posta.
-
-**Wykonaj migracje bazy danych:**
-   ```bash
-   python3 manage.py migrate
-   ```
-
